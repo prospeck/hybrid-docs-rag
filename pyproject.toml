@@ -31,7 +31,7 @@ openai = ["openai>=1.93,<3"]
 dashboard = ["streamlit>=1.46,<2"]
 torch = ["sentence-transformers>=5.0,<6"]
 dev = [
-  "mypy>=1.16,<2",
+  "mypy>=1.16,<3",
   "pytest>=8.4,<9",
   "pytest-asyncio>=1.0,<2",
   "pytest-cov>=6.2,<8",
