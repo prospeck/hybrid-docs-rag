@@ -8,7 +8,12 @@ services:
     ports:
       - "8000:8000"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      test:
+        - CMD-SHELL
+        - >-
+          timeout 5 bash -c "exec 3<>/dev/tcp/127.0.0.1/8000 &&
+          printf 'GET /api/v2/heartbeat HTTP/1.0\r\nHost: localhost\r\n\r\n' >&3 &&
+          grep -q '200 OK' <&3"
       interval: 10s
       timeout: 5s
       retries: 12
@@ -23,6 +28,8 @@ services:
       RAG_EMBEDDING_PROVIDER: fastembed
       RAG_GENERATION_PROVIDER: ollama
       RAG_OLLAMA_BASE_URL: http://ollama:11434
+      FASTEMBED_CACHE_PATH: /home/appuser/.cache/fastembed
+      HF_HOME: /home/appuser/.cache/huggingface
     volumes:
       - rag_data:/app/data
       - model_cache:/home/appuser/.cache
@@ -64,6 +71,8 @@ services:
       RAG_EMBEDDING_PROVIDER: fastembed
       RAG_GENERATION_PROVIDER: extractive
       RAG_RERANKER_ENABLED: "false"
+      FASTEMBED_CACHE_PATH: /home/appuser/.cache/fastembed
+      HF_HOME: /home/appuser/.cache/huggingface
     volumes:
       - rag_data:/app/data
       - model_cache:/home/appuser/.cache

@@ -1,6 +1,11 @@
 from __future__ import annotations
 
-from hybrid_rag.generation import citation_support_score, context_prompt, parse_claims
+from hybrid_rag.generation import (
+    citation_support_score,
+    context_prompt,
+    parse_claims,
+    repair_missing_citations,
+)
 from hybrid_rag.models import Chunk, SearchHit
 
 
@@ -40,3 +45,13 @@ def test_citation_support_score_is_bounded_and_rewards_entailment() -> None:
     )
     weak = citation_support_score("Access expires after eight hours", "Deployments use canaries")
     assert 0 <= weak < strong <= 1
+
+
+def test_missing_citations_are_repaired_only_with_strong_evidence() -> None:
+    supported = repair_missing_citations("Access expires after eight hours.", [search_hit()])
+    unsupported = repair_missing_citations("Deployments use canaries.", [search_hit()])
+    existing = repair_missing_citations("Access expires after eight hours. [1]", [search_hit()])
+
+    assert supported == "Access expires after eight hours. [1]"
+    assert unsupported == "Deployments use canaries."
+    assert existing == "Access expires after eight hours. [1]"

@@ -5,6 +5,18 @@ from pathlib import Path
 from hybrid_rag.container import Components
 
 
+class RejectingJudgeGenerator:
+    name = "rejecting-judge"
+
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def generate(self, system: str, user: str) -> str:
+        del system, user
+        self.calls += 1
+        return "API access tokens expire after 60 minutes. [1]"
+
+
 def test_ingestion_keeps_dense_and_sparse_indexes_in_sync(
     components: Components, tmp_path: Path
 ) -> None:
@@ -59,6 +71,21 @@ def test_answer_contains_verified_source_and_confidence(
     assert result.citations
     assert result.citations[0].source == "api.txt"
     assert 0 <= result.confidence.composite <= 1
+
+
+def test_direct_evidence_is_verified_without_an_llm_judge_call(
+    components: Components, tmp_path: Path
+) -> None:
+    path = tmp_path / "api.txt"
+    path.write_text("API access tokens expire after 60 minutes.", encoding="utf-8")
+    components.ingestion.ingest(path)
+    generator = RejectingJudgeGenerator()
+    components.service.generator = generator
+
+    result = components.service.ask("How long do API access tokens last?")
+
+    assert generator.calls == 1
+    assert result.citations[0].verified is True
 
 
 def test_low_retrieval_confidence_returns_structured_unknown(

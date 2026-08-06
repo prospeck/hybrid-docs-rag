@@ -472,7 +472,7 @@ The fallback is not secretly presented as an LLM answer. The API exposes `provid
 
 ### Step 11: Verify citations
 
-The service parses factual claims and their bracket references. For each valid reference, it compares the claim to the cited evidence. When a working non-extractive generator is configured, it can ask that model for a judge score. If judging fails, a local token-support score is used.
+The service parses factual claims and their bracket references. For each valid reference, it compares the claim to the cited evidence. Strong direct lexical matches are verified locally; lower-overlap paraphrases can be sent to a working non-extractive generator for a judge score. If judging fails, the local token-support score is used.
 
 A support score of at least `0.45` marks the citation verified. The response also includes the best supporting quote, source, heading, page, and chunk ID.
 
