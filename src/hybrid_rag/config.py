@@ -24,8 +24,10 @@ class Settings(BaseSettings):
     chunk_overlap: int = Field(default=150, ge=0, le=1000)
     semantic_breakpoint_percentile: float = Field(default=80.0, ge=50, le=99)
 
-    embedding_provider: Literal["sentence_transformers", "openai", "hash"] = "sentence_transformers"
-    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+    embedding_provider: Literal["fastembed", "sentence_transformers", "openai", "hash"] = (
+        "fastembed"
+    )
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
     openai_base_url: str = "https://api.openai.com/v1"
     openai_api_key: str | None = Field(
         default=None,
@@ -45,7 +47,7 @@ class Settings(BaseSettings):
     sparse_weight: float = Field(default=0.3, ge=0, le=1)
     rrf_k: int = Field(default=60, ge=1, le=500)
     reranker_enabled: bool = True
-    reranker_model: str = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+    reranker_model: str = "Xenova/ms-marco-MiniLM-L-6-v2"
     minimum_retrieval_confidence: float = Field(default=0.25, ge=0, le=1)
     duplicate_similarity_threshold: float = Field(default=0.95, ge=0.8, le=1)
 

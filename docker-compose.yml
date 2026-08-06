@@ -20,7 +20,7 @@ services:
       RAG_DATA_DIR: /app/data
       RAG_CHROMA_HOST: chroma
       RAG_CHROMA_PORT: 8000
-      RAG_EMBEDDING_PROVIDER: sentence_transformers
+      RAG_EMBEDDING_PROVIDER: fastembed
       RAG_GENERATION_PROVIDER: ollama
       RAG_OLLAMA_BASE_URL: http://ollama:11434
     volumes:
@@ -61,7 +61,7 @@ services:
     environment:
       RAG_DATA_DIR: /app/data
       RAG_CHROMA_HOST: chroma
-      RAG_EMBEDDING_PROVIDER: sentence_transformers
+      RAG_EMBEDDING_PROVIDER: fastembed
       RAG_GENERATION_PROVIDER: extractive
       RAG_RERANKER_ENABLED: "false"
     volumes:

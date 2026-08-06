@@ -34,14 +34,14 @@ class CrossEncoderReranker:
     name = "cross_encoder"
 
     def __init__(self, model_name: str) -> None:
-        from sentence_transformers import CrossEncoder
+        from fastembed.rerank.cross_encoder import TextCrossEncoder
 
-        self.model = CrossEncoder(model_name)
+        self.model = TextCrossEncoder(model_name=model_name, lazy_load=True)
 
     def rerank(self, question: str, candidates: list[SearchHit], top_k: int) -> list[SearchHit]:
         if not candidates:
             return []
-        raw_scores = self.model.predict([(question, item.chunk.text) for item in candidates])
+        raw_scores = self.model.rerank(question, [item.chunk.text for item in candidates])
         for candidate, raw_score in zip(candidates, raw_scores, strict=True):
             score = 1.0 / (1.0 + pow(2.718281828, -float(raw_score)))
             candidate.rerank_score = score
@@ -105,7 +105,7 @@ class HybridRetriever:
         if mode == "hybrid" and self.sparse_index.size != self.vector_store.count():
             chunks, _ = self.vector_store.all()
             self.sparse_index.rebuild(chunks)
-        query_embedding = self.embeddings.embed([question])[0]
+        query_embedding = self.embeddings.embed_query(question)
         dense = self.vector_store.query(query_embedding, self.settings.dense_top_k)
         sparse = (
             self.sparse_index.search(question, self.settings.sparse_top_k)

@@ -7,7 +7,6 @@ COPY pyproject.toml README.md ./
 COPY src ./src
 RUN python -m venv /opt/venv \
     && /opt/venv/bin/pip install --upgrade pip \
-    && /opt/venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch \
     && /opt/venv/bin/pip install .
 
 FROM python:3.12-slim AS runtime

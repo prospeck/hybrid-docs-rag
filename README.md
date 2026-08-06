@@ -2,7 +2,7 @@
 
 A production-oriented Retrieval-Augmented Generation system for internal documentation. It ingests Markdown, text, HTML, and PDF files; indexes every chunk in synchronized dense and BM25 stores; fuses results with weighted Reciprocal Rank Fusion; reranks candidates; and returns grounded answers with verified inline citations and explainable confidence scores.
 
-The default stack is free and local: Sentence Transformers, Chroma, BM25, a cross-encoder, and Ollama. If Ollama is unavailable, the API stays useful through a clearly labelled extractive fallback instead of failing or hallucinating. OpenAI-compatible adapters are optional.
+The default stack is free and local: FastEmbed ONNX models, Chroma, BM25, a cross-encoder, and Ollama. If Ollama is unavailable, the API stays useful through a clearly labelled extractive fallback instead of failing or hallucinating. OpenAI-compatible adapters are optional.
 
 ## Why this is more than a RAG demo
 
@@ -118,7 +118,7 @@ The comparison script creates isolated temporary indexes, ingests the same corpu
 | `RAG_DUPLICATE_SIMILARITY_THRESHOLD` | `0.95` | Near-duplicate cutoff |
 | `RAG_MINIMUM_RETRIEVAL_CONFIDENCE` | `0.25` | Structured “insufficient context” gate |
 | `RAG_GENERATION_PROVIDER` | `ollama` | `ollama`, `extractive`, or `openai` |
-| `RAG_EMBEDDING_PROVIDER` | `sentence_transformers` | Local model, hash test provider, or OpenAI |
+| `RAG_EMBEDDING_PROVIDER` | `fastembed` | Local ONNX model, hash test provider, optional Sentence Transformers, or OpenAI |
 | `RAG_CHROMA_HOST` | empty | Empty uses embedded Chroma; hostname uses server mode |
 
 ## Design decisions and trade-offs

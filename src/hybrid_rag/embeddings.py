@@ -17,6 +17,8 @@ class EmbeddingProvider(Protocol):
 
     def embed(self, texts: Sequence[str]) -> list[list[float]]: ...
 
+    def embed_query(self, text: str) -> list[float]: ...
+
 
 class HashEmbeddingProvider:
     """Deterministic, dependency-light provider for tests and degraded local operation."""
@@ -41,6 +43,25 @@ class HashEmbeddingProvider:
             vectors.append(vector.tolist())
         return vectors
 
+    def embed_query(self, text: str) -> list[float]:
+        return self.embed([text])[0]
+
+
+class FastEmbedEmbeddingProvider:
+    name = "fastembed"
+
+    def __init__(self, model_name: str) -> None:
+        from fastembed import TextEmbedding
+
+        self.model = TextEmbedding(model_name=model_name, lazy_load=True)
+
+    def embed(self, texts: Sequence[str]) -> list[list[float]]:
+        return [vector.astype(np.float32).tolist() for vector in self.model.embed(list(texts))]
+
+    def embed_query(self, text: str) -> list[float]:
+        vector = next(iter(self.model.query_embed(text)))
+        return cast(list[float], vector.astype(np.float32).tolist())
+
 
 class SentenceTransformerEmbeddingProvider:
     name = "sentence_transformers"
@@ -53,6 +74,9 @@ class SentenceTransformerEmbeddingProvider:
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         vectors = self.model.encode(list(texts), normalize_embeddings=True, show_progress_bar=False)
         return cast(list[list[float]], vectors.tolist())
+
+    def embed_query(self, text: str) -> list[float]:
+        return self.embed([text])[0]
 
 
 class OpenAIEmbeddingProvider:
@@ -77,6 +101,9 @@ class OpenAIEmbeddingProvider:
         payload = response.json()
         return [item["embedding"] for item in sorted(payload["data"], key=lambda x: x["index"])]
 
+    def embed_query(self, text: str) -> list[float]:
+        return self.embed([text])[0]
+
 
 def cosine_similarity(left: Sequence[float], right: Sequence[float]) -> float:
     dot = sum(a * b for a, b in zip(left, right, strict=False))
@@ -90,4 +117,6 @@ def build_embedding_provider(settings: Settings) -> EmbeddingProvider:
         return OpenAIEmbeddingProvider(settings)
     if settings.embedding_provider == "hash":
         return HashEmbeddingProvider()
+    if settings.embedding_provider == "fastembed":
+        return FastEmbedEmbeddingProvider(settings.embedding_model)
     return SentenceTransformerEmbeddingProvider(settings.embedding_model)
