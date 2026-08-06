@@ -18,7 +18,8 @@ WORKDIR /app
 COPY --from=builder /opt/venv /opt/venv
 COPY sample_corpus ./sample_corpus
 COPY eval_dataset.json ./eval_dataset.json
-RUN mkdir -p /app/data/raw /app/data/processed /app/data/indexes && chown -R appuser:appuser /app
+RUN mkdir -p /app/data/raw /app/data/processed /app/data/indexes /home/appuser/.cache \
+    && chown -R appuser:appuser /app /home/appuser/.cache
 USER appuser
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \

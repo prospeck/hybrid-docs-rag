@@ -14,6 +14,7 @@ from hybrid_rag.generation import (
     context_prompt,
     llm_verify_citation,
     parse_claims,
+    repair_missing_citations,
 )
 from hybrid_rag.loaders import DocumentLoader
 from hybrid_rag.models import (
@@ -86,6 +87,7 @@ class RAGService:
                 answer = self.extractive.generate_from_hits(question, hits)
                 degraded = True
 
+        answer = repair_missing_citations(answer, hits)
         citations, citation_coverage = self._verify_citations(answer, hits, degraded)
         completeness = self._completeness(question, answer)
         composite = clamp(
@@ -121,13 +123,19 @@ class RAGService:
                 if not 1 <= reference <= len(hits):
                     continue
                 evidence = hits[reference - 1].chunk.text
-                score = (
-                    None
-                    if degraded or isinstance(self.generator, ExtractiveGenerator)
-                    else (llm_verify_citation(self.generator, claim, evidence))
-                )
-                if score is None:
-                    score = citation_support_score(claim, evidence)
+                lexical_score = citation_support_score(claim, evidence)
+                # Directly copied or lightly edited evidence is more reliably verified locally;
+                # reserve the slower model judge for lower-overlap paraphrases.
+                score: float
+                if lexical_score >= 0.8:
+                    score = lexical_score
+                else:
+                    judge_score = (
+                        None
+                        if degraded or isinstance(self.generator, ExtractiveGenerator)
+                        else (llm_verify_citation(self.generator, claim, evidence))
+                    )
+                    score = lexical_score if judge_score is None else judge_score
                 if score >= 0.45:
                     claim_supported = True
                 previous = best_by_reference.get(reference)
