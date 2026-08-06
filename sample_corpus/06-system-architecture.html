@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Northstar System Architecture</title></head>
+<body>
+  <h1>Northstar System Architecture</h1>
+  <h2>Request path</h2>
+  <p>External traffic enters through Edge Gateway, passes through the Policy Service, and reaches regional application clusters. The Policy Service performs authentication, tenant routing, and rate-limit checks. Requests carry a correlation ID in the X-Request-ID header.</p>
+  <h2>Data stores</h2>
+  <p>PostgreSQL is the system of record for accounts and transactions. Redis stores ephemeral sessions and rate-limit counters with a maximum TTL of 24 hours. OpenSearch stores searchable audit events but is not a system of record.</p>
+  <h2>Regional resilience</h2>
+  <p>Production runs in three regions. Each tenant has one write region and two read regions. Regional failover requires database replication lag below 10 seconds and approval from the incident commander. The recovery time objective is 30 minutes and the recovery point objective is 5 minutes.</p>
+  <h2>Event delivery</h2>
+  <p>Transactional outbox rows are written in the same PostgreSQL transaction as business state. Relay workers publish them to Kafka. Consumers must be idempotent because Kafka delivery is at least once. Dead-letter events are retained for 14 days.</p>
+  <h2>Backups</h2>
+  <p>PostgreSQL snapshots run every six hours and write-ahead logs are archived continuously. Restore drills run quarterly. A backup is not considered valid until a restore test completes and row-count checks pass.</p>
+</body>
+</html>
+

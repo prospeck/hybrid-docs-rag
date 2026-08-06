@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hybrid-docs-rag"
+version = "0.1.0"
+description = "Production-grade hybrid retrieval augmented generation over internal documentation"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "prospeck" }]
+dependencies = [
+  "beautifulsoup4>=4.13,<5",
+  "chromadb>=1.0,<2",
+  "fastapi>=0.116,<1",
+  "httpx>=0.28,<1",
+  "langchain-text-splitters>=0.3,<2",
+  "numpy>=1.26,<2.4",
+  "orjson>=3.10,<4",
+  "pydantic-settings>=2.10,<3",
+  "pypdf>=5.7,<7",
+  "python-multipart>=0.0.20,<1",
+  "rank-bm25>=0.2.2,<1",
+  "sentence-transformers>=5.0,<6",
+  "uvicorn[standard]>=0.35,<1",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.93,<3"]
+dashboard = ["streamlit>=1.46,<2"]
+dev = [
+  "mypy>=1.16,<2",
+  "pytest>=8.4,<9",
+  "pytest-asyncio>=1.0,<2",
+  "pytest-cov>=6.2,<8",
+  "ruff>=0.12,<1",
+]
+
+[project.scripts]
+hybrid-rag = "hybrid_rag.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hybrid_rag"]
+
+[tool.pytest.ini_options]
+addopts = "-q --strict-markers --disable-warnings"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "ASYNC", "RUF"]
+ignore = ["B008"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_unused_ignores = true
+
+[[tool.mypy.overrides]]
+module = "rank_bm25"
+ignore_missing_imports = true
