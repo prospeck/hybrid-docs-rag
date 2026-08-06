@@ -129,7 +129,10 @@ The comparison script creates isolated temporary indexes, ingests the same corpu
 - **Conservative citation verification:** local lexical entailment is always available; the configured LLM judges claim/evidence pairs when reachable. A failed judge degrades to the local verifier and never marks failure as proof.
 - **Single-node Chroma:** appropriate for a portfolio/internal-doc workload. A larger deployment would add authentication, object storage, distributed workers, and a durable ingestion queue.
 
-More detail is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/CASE_STUDY.md](docs/CASE_STUDY.md), and the timed [demo recording script](docs/DEMO_SCRIPT.md).
+New to RAG or preparing to present this project? Start with the complete
+[interview preparation guide](INTERVIEW_PREP.md). More implementation detail is in
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/CASE_STUDY.md](docs/CASE_STUDY.md),
+and the timed [demo recording script](docs/DEMO_SCRIPT.md).
 
 ## Quality checks
 
