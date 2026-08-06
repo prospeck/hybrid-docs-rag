@@ -63,5 +63,5 @@ strict = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = "rank_bm25"
+module = ["rank_bm25", "sentence_transformers"]
 ignore_missing_imports = true
