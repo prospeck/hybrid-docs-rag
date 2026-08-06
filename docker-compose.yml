@@ -1,0 +1,78 @@
+name: hybrid-docs-rag
+
+services:
+  chroma:
+    image: chromadb/chroma:1.5.9
+    volumes:
+      - chroma_data:/data
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build:
+      context: .
+    environment:
+      RAG_DATA_DIR: /app/data
+      RAG_CHROMA_HOST: chroma
+      RAG_CHROMA_PORT: 8000
+      RAG_EMBEDDING_PROVIDER: sentence_transformers
+      RAG_GENERATION_PROVIDER: ollama
+      RAG_OLLAMA_BASE_URL: http://ollama:11434
+    volumes:
+      - rag_data:/app/data
+      - model_cache:/home/appuser/.cache
+    ports:
+      - "8080:8080"
+    depends_on:
+      chroma:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+
+  dashboard:
+    build:
+      context: .
+      dockerfile: dashboard/Dockerfile
+    environment:
+      RAG_API_URL: http://api:8080
+    ports:
+      - "8501:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+
+  ollama:
+    image: ollama/ollama:0.32.0
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+
+  seed:
+    build:
+      context: .
+    profiles: ["tools"]
+    command: ["hybrid-rag", "seed", "sample_corpus"]
+    environment:
+      RAG_DATA_DIR: /app/data
+      RAG_CHROMA_HOST: chroma
+      RAG_EMBEDDING_PROVIDER: sentence_transformers
+      RAG_GENERATION_PROVIDER: extractive
+      RAG_RERANKER_ENABLED: "false"
+    volumes:
+      - rag_data:/app/data
+      - model_cache:/home/appuser/.cache
+    depends_on:
+      chroma:
+        condition: service_healthy
+
+volumes:
+  chroma_data:
+  rag_data:
+  model_cache:
+  ollama_data:

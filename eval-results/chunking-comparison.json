@@ -1,0 +1,70 @@
+{
+  "configuration": {
+    "embedding_provider": "hash",
+    "generation_provider": "extractive",
+    "reranker": "lexical",
+    "purpose": "reproducible no-key regression baseline"
+  },
+  "results": [
+    {
+      "strategy": "fixed",
+      "mode": "hybrid",
+      "case_count": 56,
+      "answer_correctness": 0.626315874236457,
+      "faithfulness": 1.0,
+      "retrieval_relevance": 0.8217261904761904,
+      "citation_accuracy": 1.0,
+      "mean_latency_ms": 3.151803576786603
+    },
+    {
+      "strategy": "fixed",
+      "mode": "dense",
+      "case_count": 56,
+      "answer_correctness": 0.626315874236457,
+      "faithfulness": 1.0,
+      "retrieval_relevance": 0.8217261904761904,
+      "citation_accuracy": 1.0,
+      "mean_latency_ms": 1.7131232161773369
+    },
+    {
+      "strategy": "recursive",
+      "mode": "hybrid",
+      "case_count": 56,
+      "answer_correctness": 0.6238640601775001,
+      "faithfulness": 1.0,
+      "retrieval_relevance": 0.8066964285714285,
+      "citation_accuracy": 1.0,
+      "mean_latency_ms": 1.7983392795680888
+    },
+    {
+      "strategy": "recursive",
+      "mode": "dense",
+      "case_count": 56,
+      "answer_correctness": 0.6238640601775001,
+      "faithfulness": 1.0,
+      "retrieval_relevance": 0.8066964285714285,
+      "citation_accuracy": 1.0,
+      "mean_latency_ms": 1.4048053562873974
+    },
+    {
+      "strategy": "semantic",
+      "mode": "hybrid",
+      "case_count": 56,
+      "answer_correctness": 0.580098220508299,
+      "faithfulness": 1.0,
+      "retrieval_relevance": 0.8013392857142857,
+      "citation_accuracy": 1.0,
+      "mean_latency_ms": 3.6703749834227244
+    },
+    {
+      "strategy": "semantic",
+      "mode": "dense",
+      "case_count": 56,
+      "answer_correctness": 0.580098220508299,
+      "faithfulness": 1.0,
+      "retrieval_relevance": 0.7875,
+      "citation_accuracy": 1.0,
+      "mean_latency_ms": 3.8613750117032657
+    }
+  ]
+}
