@@ -29,7 +29,7 @@ dependencies = [
 [project.optional-dependencies]
 openai = ["openai>=1.93,<3"]
 dashboard = ["streamlit>=1.46,<2"]
-torch = ["sentence-transformers>=5.0,<6"]
+torch = ["sentence-transformers>=5.0,<7"]
 dev = [
   "mypy>=1.16,<2",
   "pytest>=8.4,<9",
