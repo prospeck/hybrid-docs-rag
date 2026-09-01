@@ -27,7 +27,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-openai = ["openai>=1.93,<3"]
+openai = ["openai>=1.93,<4"]
 dashboard = ["streamlit>=1.46,<2"]
 torch = ["sentence-transformers>=5.0,<6"]
 dev = [
